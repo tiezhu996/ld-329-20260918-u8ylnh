@@ -45,16 +45,7 @@
         </FeatureCard>
       </div>
 
-      <div class="panel">
-        <h2>预约确认</h2>
-        <el-timeline>
-          <el-timeline-item v-for="item in overview.appointments" :key="item.id" :timestamp="item.time">
-            <strong>{{ item.pair }}</strong>
-            <p>{{ item.place }} · {{ item.status }}</p>
-            <p class="muted">{{ item.agenda }}</p>
-          </el-timeline-item>
-        </el-timeline>
-      </div>
+      <AppointmentPanel />
 
       <div class="panel profile-panel">
         <div>
@@ -92,6 +83,7 @@ import AppHeader from '../components/AppHeader.vue';
 import FeatureCard from '../components/FeatureCard.vue';
 import MetricCard from '../components/MetricCard.vue';
 import RadarChart from '../components/RadarChart.vue';
+import AppointmentPanel from '../components/appointments/AppointmentPanel.vue';
 import { fetchOverview } from '../services/storage.service';
 import type { Overview } from '../types/domain';
 

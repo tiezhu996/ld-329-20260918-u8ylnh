@@ -10,7 +10,7 @@ func Overview() model.Overview {
 	skills := repository.ListSkills()
 	needs := repository.ListNeeds()
 	matches := repository.ListMatches()
-	appointments := repository.ListAppointments()
+	appointments := repository.DefaultAppointmentStore().List()
 	reviews := repository.ListReviews()
 	messages := repository.ListMessages()
 	return model.Overview{
@@ -29,7 +29,7 @@ func Overview() model.Overview {
 func Skills() []model.Skill             { return repository.ListSkills() }
 func Needs() []model.Need               { return repository.ListNeeds() }
 func Matches() []model.Match            { return repository.ListMatches() }
-func Appointments() []model.Appointment { return repository.ListAppointments() }
+func Appointments() []model.Appointment { return repository.DefaultAppointmentStore().List() }
 func Reviews() []model.Review           { return repository.ListReviews() }
 func Messages() []model.Conversation    { return repository.ListMessages() }
 func Profile() model.Profile            { return repository.GetProfile() }

@@ -31,11 +31,34 @@ CREATE TABLE IF NOT EXISTS needs (
 
 CREATE TABLE IF NOT EXISTS appointments (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  pair_name VARCHAR(120) NOT NULL,
+  initiator VARCHAR(80) NOT NULL,
+  responder VARCHAR(80) NOT NULL,
+  pair_name VARCHAR(170) NOT NULL,
   exchange_time VARCHAR(80) NOT NULL,
   place VARCHAR(120) NOT NULL,
-  status VARCHAR(40) NOT NULL,
-  agenda TEXT NOT NULL
+  agenda VARCHAR(500) NOT NULL DEFAULT '',
+  -- pending 待确认 / confirmed_partial 单方已确认 / confirmed 双方已确认
+  -- / withdrawn 已撤回（终态）/ cancel_requested 取消待处理 / cancelled 已取消（终态）
+  status VARCHAR(40) NOT NULL DEFAULT 'pending',
+  initiator_confirmed TINYINT(1) NOT NULL DEFAULT 0,
+  responder_confirmed TINYINT(1) NOT NULL DEFAULT 0,
+  slots_held TINYINT(1) NOT NULL DEFAULT 1,
+  cancel_reason VARCHAR(300) NULL,
+  cancel_by VARCHAR(80) NULL,
+  cancel_decision VARCHAR(20) NULL,
+  version INT NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 时间档占用账本：撤回 / 取消生效后立即删除对应行释放时间档。
+CREATE TABLE IF NOT EXISTS appointment_slots (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  appointment_id BIGINT NOT NULL,
+  user_name VARCHAR(80) NOT NULL,
+  slot VARCHAR(80) NOT NULL,
+  UNIQUE KEY uk_user_slot (user_name, slot),
+  CONSTRAINT fk_slot_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
 
 CREATE TABLE IF NOT EXISTS reviews (

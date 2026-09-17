@@ -1,3 +1,5 @@
+import type { AppointmentStatus, CancelDecision } from '../constants/appointment.constants';
+
 export interface Skill {
   id: number;
   owner: string;
@@ -34,13 +36,48 @@ export interface Match {
   recommendation: string;
 }
 
+export interface CancelRequest {
+  by: string;
+  reason: string;
+  at: number;
+  decidedAt?: number;
+  decision?: CancelDecision;
+}
+
 export interface Appointment {
   id: number;
+  initiator: string;
+  responder: string;
   pair: string;
   time: string;
   place: string;
-  status: string;
   agenda: string;
+  status: AppointmentStatus;
+  statusText: string;
+  initiatorConfirmed: boolean;
+  responderConfirmed: boolean;
+  slots: string[];
+  slotsHeld: boolean;
+  cancel?: CancelRequest;
+  version: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface AppointmentActionResult {
+  appointment: Appointment;
+  changed: boolean;
+  slotsFreed?: string[];
+  note?: string;
+}
+
+export interface CreateAppointmentPayload {
+  initiator: string;
+  responder: string;
+  time: string;
+  place: string;
+  agenda: string;
+  slots: string[];
 }
 
 export interface Review {

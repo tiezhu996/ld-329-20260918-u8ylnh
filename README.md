@@ -21,7 +21,7 @@ docker compose up -d
 - 技能发布与管理：技能描述、熟练度、可交换时间段、回报类型和作品凭证。
 - 需求发布与浏览：按类别、校区、期望时间和响应数量查看求助需求。
 - 智能匹配推荐：展示互补技能、匹配度、共同可用时间和推荐理由。
-- 交换预约与确认：记录双方确认状态、时间、地点和协商议程。
+- 交换预约与确认：双方确认 / 发起人撤回 / 锁定后取消申请与审批的完整状态机，撤回或取消生效后双方时间档立即释放。
 - 评价与信用体系：评分、文字评价、信用分和信用等级用于推荐权重。
 - 消息通知系统：会话未读红点、系统通知和预约提醒。
 - 个人主页与技能墙：历史交换、收到评价和 ECharts 技能雷达图。
@@ -87,10 +87,34 @@ go run ./cmd/server
 - `GET /api/skills`
 - `GET /api/needs`
 - `GET /api/matches`
-- `GET /api/appointments`
+- `GET /api/appointments` / `POST /api/appointments`
+- `GET /api/appointments/:id`
+- `POST /api/appointments/:id/confirm` 任一方确认
+- `POST /api/appointments/:id/withdraw` 待确认阶段仅发起人可撤回
+- `POST /api/appointments/:id/cancel-requests` 确认锁定后提交取消原因
+- `POST /api/appointments/:id/cancel-decisions` 对方同意 / 拒绝取消
+- `GET /api/users/:user/slots` 查询用户仍被占用的时间档
 - `GET /api/reviews`
 - `GET /api/messages`
 - `GET /api/profile`
+
+### 交换预约状态机
+
+```text
+pending ──任一方确认──▶ confirmed_partial ──另一方确认──▶ confirmed（锁定）
+pending / confirmed_partial ──发起人撤回──▶ withdrawn（终态，时间档立即释放）
+confirmed ──任一方提交取消原因──▶ cancel_requested
+                              ├─对方 approve─▶ cancelled（终态，时间档立即释放）
+                              └─对方 reject ─▶ confirmed（时间档保持占用）
+```
+
+闭环规则：
+
+- 待确认（含单方已确认）时仅发起人可撤回，撤回生效后双方时间档立即释放，可被新预约复用。
+- 确认与发起人撤回同时到达时，服务端串行化处理，终态唯一（撤回优先成为权威终态），不会出现既确认又撤回。
+- 双方确认锁定后不能再撤回，只能提交取消原因，等待对方处理；对方同意前时间档继续占用。
+- 重复请求不改变终态（幂等返回 `changed=false`），刷新页面后仍可从服务端回读终态。
+- 演示环境通过 `X-User-Name` 请求头或 `?actor=` 查询参数标识操作人（JWT 认证预留）。
 
 ## 环境变量说明
 
