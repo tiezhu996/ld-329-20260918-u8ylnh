@@ -1,3 +1,7 @@
+import type { Appointment } from './appointment';
+
+export type { Appointment };
+
 export interface Skill {
   id: number;
   owner: string;
@@ -32,15 +36,6 @@ export interface Match {
   score: number;
   commonSlots: string[];
   recommendation: string;
-}
-
-export interface Appointment {
-  id: number;
-  pair: string;
-  time: string;
-  place: string;
-  status: string;
-  agenda: string;
 }
 
 export interface Review {

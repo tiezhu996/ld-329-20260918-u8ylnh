@@ -36,15 +36,6 @@ type Match struct {
 	Recommendation string   `json:"recommendation"`
 }
 
-type Appointment struct {
-	ID     int    `json:"id"`
-	Pair   string `json:"pair"`
-	Time   string `json:"time"`
-	Place  string `json:"place"`
-	Status string `json:"status"`
-	Agenda string `json:"agenda"`
-}
-
 type Review struct {
 	ID      int    `json:"id"`
 	From    string `json:"from"`
